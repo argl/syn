@@ -1,0 +1,8 @@
+{
+  "couch": true,
+  "strict": false,
+  "unused": false,
+  "globals": {
+    "Document": true
+  }
+}

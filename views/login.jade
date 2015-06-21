@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  form(action='/login', method="POST")
+    .row
+      .col-xs-6
+        label Username
+        input(type="text" name="username")
+    .row
+      .col-xs-6
+        label Password
+        input(type="password" name="password")
+    .row
+      .col-xs-6
+        input.button(type="submit", value="Login")
+

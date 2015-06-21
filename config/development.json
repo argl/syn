@@ -1,0 +1,8 @@
+{
+  "couch": {
+    "url": "http://localhost:5984",
+    "db": "syn",
+    "username": "andi",
+    "password": "blabla"
+  }
+}

@@ -1,0 +1,1 @@
+module.exports = require("github:Semantic-Org/Semantic-UI@1.12.3/semantic");
