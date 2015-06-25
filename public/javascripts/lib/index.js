@@ -109,6 +109,22 @@ $(function() {
 
   var context = audio.createContext()
 
+  var iphone_enabled = false
+  window.addEventListener('touchstart', function() {
+    if (!iphone_enabled) {
+      // create new buffer source for playback with an already
+      // loaded and decoded empty sound file
+      var source = context.createOscillator()
+      // connect to output (your speakers)
+      source.connect(context.destination);
+      // play the file
+      source.noteOn(0);
+      source.noteOff(context.currentTime + 1000);
+      iphone_enabled = true;
+      
+    }
+  }, false);
+
   // Create the source.
   var source = context.createBufferSource();
   // Create the gain node.
