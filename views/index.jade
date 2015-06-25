@@ -4,11 +4,35 @@ block content
   .container
     .starter-template
       h1 Bootstrap starter template
-      p.lead
-        | Use this document as a way to quickly start any new project.
-        br
-        |  All you get is this text and a mostly barebones HTML document.
+      form#speech-frm(action='/speech_api', method="GET")
+        input(name='text', type='text')
+        | Pitch
+        select(name='pitch')
+          for value in [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300]
+            option(value="#{value}") #{value}
+        | Speed
+        select(name='speed')
+          for value in [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300]
+            option(value="#{value}") #{value}
+        | Voice
+        select(name='voice')
+          for value in ['us2_mbrola', 'rab_diphone', 'us1_mbrola', 'en1_mbrola', 'us3_mbrola', 'don_diphone', 'kal_diphone', 'nitech_us_slt_arctic_hts']
+            option(value="#{value}") #{value}
+        | Efx
+        input(name="efx", type="checkbox", value="1")
+        input(type="submit")
+      hr
+      form#file-frm()
+        | Sample
+        select(name='file')
+          for value in ["huge.wav"]
+            option(value="#{value}") #{value}
+        input(type="submit")
+      hr
+    .row#running
+
 
 block script
   script.
     System.import('javascripts/lib/index')
+

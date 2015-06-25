@@ -12,13 +12,33 @@ var docuri = require("docuri")
 var moment = require("moment")
 var tts = require("../lib/tts")
 
+var fs = require("fs")
+var words = ['hello']
+
+fs.readFile('lib/words', 'utf8', function (err, data) {
+  if (err) {
+    return console.log(err);
+  }
+  words = _.filter(data.split(/\s+/), function(word) {
+    return word.match(/^syn/)
+  });
+  console.log(words.splice(0, 10))
+})
+
 router.get('/', function(req, res, next) {
   // text=bla&voice=en_1&pitch=1.0
+  var text = "holla"
   if (!req.query.text) {
-    return res.status(422).send(JSON.stringify({error: 'insufficient parameters'}))
+    text = ""
+    var count = 10
+    var startindex = Math.floor(Math.random() * (words.length - count))
+    _.times(count, function(idx) {
+      text += " " + words[startindex + idx]
+    })
+  } else {
+    text = req.query.text.substring(0, 255)
   }
-  var text = req.query.text.substring(0, 255)
-  var voice = (req.query.voice || "us_1").substring(0, 255).replace(/[^a-z_0-9]/, '')
+  var voice = (req.query.voice || "us1_mbrola").substring(0, 255).replace(/[^a-z_0-9]/, '')
   var pitch = req.query.pitch || "0"
   var speed = req.query.speed || "0"
   var params = {
@@ -27,6 +47,7 @@ router.get('/', function(req, res, next) {
   	pitch: pitch,
   	speed: speed
   }
+  console.log(params)
   res.set('Content-Type', 'audio/mp3')
   tts.mp3(params)
   .then(function(stream) {
