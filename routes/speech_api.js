@@ -10,6 +10,7 @@ var db = prom(nano).db.use(config.couch.db);
 var ndb = nano.use(config.couch.db)
 var docuri = require("docuri")
 var moment = require("moment")
+var tts = require("../lib/tts")
 
 router.get('/', function(req, res, next) {
   // text=bla&voice=en_1&pitch=1.0
@@ -17,9 +18,25 @@ router.get('/', function(req, res, next) {
     return res.status(422).send(JSON.stringify({error: 'insufficient parameters'}))
   }
   var text = req.query.text.substring(0, 255)
-  var voice = req.query.voice ? req.query.voice.substring(0, 255).replace(/[^a-z_0-9]/, '') : 'us_1'
-  var pitch = req.query.pitch ? parseFloat(req.query.pitch) : 1.0
-  res.send(JSON.stringify({ok: true, text: req.query.text}));
+  var voice = (req.query.voice || "us_1").substring(0, 255).replace(/[^a-z_0-9]/, '')
+  var pitch = req.query.pitch || "0"
+  var speed = req.query.speed || "0"
+  var params = {
+  	text: text,
+  	voice: voice,
+  	pitch: pitch,
+  	speed: speed
+  }
+  res.set('Content-Type', 'audio/mp3')
+  tts.mp3(params)
+  .then(function(stream) {
+  	stream.pipe(res)
+  })
+	// .catch(function(err) {
+	// 	console.log(JSON.stringify(err))
+	// 	return err
+	// }) 
+
 });
 
 
