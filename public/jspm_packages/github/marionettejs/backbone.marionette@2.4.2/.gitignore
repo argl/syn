@@ -1,0 +1,16 @@
+.DS_Store
+*.swp
+*.swo
+*.orig
+.idea
+tmp/
+ext/
+node_modules/
+coverage/
+.grunt/
+npm-debug.log
+bower_components/
+.grunt
+reports
+jsdoc
+test/src/

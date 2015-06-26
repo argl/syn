@@ -11,8 +11,11 @@ System.config({
 System.config({
   "map": {
     "Semantic-Org/Semantic-UI": "github:Semantic-Org/Semantic-UI@1.12.3",
+    "backbone": "npm:backbone@1.2.1",
     "bootstrap": "github:twbs/bootstrap@3.3.5",
     "jquery": "github:components/jquery@2.1.4",
+    "marionettejs/backbone.babysitter": "github:marionettejs/backbone.babysitter@0.1.8",
+    "marionettejs/backbone.marionette": "github:marionettejs/backbone.marionette@2.4.2",
     "moment": "github:moment/moment@2.10.3",
     "traceur": "github:jmcriffey/bower-traceur@0.0.88",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88",
@@ -65,8 +68,8 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0"
     },
     "github:twbs/bootstrap@3.3.5": {
-      "jquery": "github:components/jquery@2.1.4",
-      "css": "github:systemjs/plugin-css@0.1.12"
+      "css": "github:systemjs/plugin-css@0.1.12",
+      "jquery": "github:components/jquery@2.1.4"
     },
     "npm:amdefine@0.1.1": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -76,6 +79,10 @@ System.config({
     },
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
+    },
+    "npm:backbone@1.2.1": {
+      "process": "github:jspm/nodelibs-process@0.1.1",
+      "underscore": "npm:underscore@1.8.3"
     },
     "npm:buffer@3.2.2": {
       "base64-js": "npm:base64-js@0.0.8",
