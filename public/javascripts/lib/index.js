@@ -1,10 +1,19 @@
-import {app_bootstrap} from './app_bootstrap'
-app_bootstrap();
+import _ from 'underscore'
+import $ from 'jquery'
+import Moment from 'moment'
+import 'bootstrap'
+import Backbone from "backbone"
+import Marionette from "backbone.marionette"
+
 import audio from './audio'
+import SamplePlayer from '../models/sampleplayer'
 
 
 
 $(function() {
+
+  var players = new Backbone.Collection()
+
   $('#speech-frm').on('submit', function(e) {
     e.preventDefault()
     var params = {
@@ -30,8 +39,16 @@ $(function() {
   })
 
   function loadAndPlaySound(url) {
-    var bufferLoader = new audio.BufferLoader(context, [url], finishedLoading);
-    bufferLoader.load();
+    var player = new SamplePlayer({
+      url: url,
+      destination: context.destination,
+    })
+    player.prepare(context)
+    .then(function(player) {
+      console.log(player)
+      window.player = player
+      players.add(player)
+    })
   }
 
   function finishedLoading(bufferList) {

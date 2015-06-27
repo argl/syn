@@ -11,12 +11,15 @@ System.config({
 System.config({
   "map": {
     "Semantic-Org/Semantic-UI": "github:Semantic-Org/Semantic-UI@1.12.3",
+    "audio": "javascripts/lib/audio",
     "backbone": "npm:backbone@1.2.1",
+    "backbone.babysitter": "github:marionettejs/backbone.babysitter@0.1.8",
+    "backbone.marionette": "github:marionettejs/backbone.marionette@2.4.2",
+    "backbone.wreqr": "github:marionettejs/backbone.wreqr@1.3.3",
     "bootstrap": "github:twbs/bootstrap@3.3.5",
     "jquery": "github:components/jquery@2.1.4",
-    "marionettejs/backbone.babysitter": "github:marionettejs/backbone.babysitter@0.1.8",
-    "marionettejs/backbone.marionette": "github:marionettejs/backbone.marionette@2.4.2",
     "moment": "github:moment/moment@2.10.3",
+    "q": "npm:q@2.0.3",
     "traceur": "github:jmcriffey/bower-traceur@0.0.88",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88",
     "underscore": "github:components/underscore@1.7.0",
@@ -29,6 +32,9 @@ System.config({
     },
     "github:jspm/nodelibs-buffer@0.1.0": {
       "buffer": "npm:buffer@3.2.2"
+    },
+    "github:jspm/nodelibs-domain@0.1.0": {
+      "domain-browser": "npm:domain-browser@1.1.4"
     },
     "github:jspm/nodelibs-events@0.1.1": {
       "events": "npm:events@1.0.2"
@@ -77,6 +83,10 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
+    "npm:asap@2.0.3": {
+      "domain": "github:jspm/nodelibs-domain@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
@@ -111,6 +121,9 @@ System.config({
     "npm:core-util-is@1.0.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0"
     },
+    "npm:domain-browser@1.1.4": {
+      "events": "github:jspm/nodelibs-events@0.1.1"
+    },
     "npm:https-browserify@0.0.0": {
       "http": "github:jspm/nodelibs-http@1.7.1"
     },
@@ -125,6 +138,12 @@ System.config({
     },
     "npm:punycode@1.3.2": {
       "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:q@2.0.3": {
+      "asap": "npm:asap@2.0.3",
+      "pop-iterate": "npm:pop-iterate@1.0.1",
+      "process": "github:jspm/nodelibs-process@0.1.1",
+      "weak-map": "npm:weak-map@1.0.5"
     },
     "npm:readable-stream@1.1.13": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
