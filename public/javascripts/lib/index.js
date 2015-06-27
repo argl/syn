@@ -10,9 +10,42 @@ import SamplePlayer from '../models/sampleplayer'
 
 
 
+var PlayerView = Marionette.ItemView.extend({
+  template: '#player-view-template',
+  events: {
+    'click .destroy-btn': function(e) {
+      e.preventDefault()
+      this.model.stop()
+      this.model.destroy()
+    }
+  }
+})
+
+var PlayersView = Marionette.CollectionView.extend({
+  template: '#players-view-template',
+  childView: PlayerView,
+  childViewContainer: ".player-container",
+})
+
+
 $(function() {
 
   var players = new Backbone.Collection()
+
+  var playersview = new PlayersView({
+    collection: players
+  })
+
+  window.pv = playersview
+
+  var app = new Marionette.Application();
+  app.addRegions({
+    playersRegion: "#running",
+  });
+  app.start()
+  window.app = app
+
+  app.playersRegion.show(playersview)
 
   $('#speech-frm').on('submit', function(e) {
     e.preventDefault()
@@ -43,6 +76,7 @@ $(function() {
       url: url,
       destination: context.destination,
     })
+    players.add(player)
     player.prepare(context)
     .then(function(player) {
       console.log(player)
@@ -142,13 +176,13 @@ $(function() {
     }
   }, false);
 
-  // Create the source.
-  var source = context.createBufferSource();
-  // Create the gain node.
-  var gain = context.createGain();
-  // Connect source to filter, filter to destination.
-  source.connect(gain);
-  gain.connect(context.destination);
+  // // Create the source.
+  // var source = context.createBufferSource();
+  // // Create the gain node.
+  // var gain = context.createGain();
+  // // Connect source to filter, filter to destination.
+  // source.connect(gain);
+  // gain.connect(context.destination);
 
 
 

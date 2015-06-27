@@ -31,6 +31,14 @@ block content
       hr
     .row#running
 
+  script#player-view-template(type="text/html")
+    | PLAYER template
+    button.btn.destroy-btn DESTROY
+
+  script#players-view-template(type="text/html")
+    | PLAYERS template
+    .player-container
+
 
 block script
   script.

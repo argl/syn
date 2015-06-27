@@ -24,6 +24,12 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       }
     },
 
+    stop: function() {
+      this.bufferSource.stop()
+      this.bufferSource.disconnect()
+      this.distortion.disconnect()
+    },
+
     prepare: function(context) {
       this.context = context
       var bufferLoader = new Audio.BufferLoader(context, [this.get('url')], _.bind(this.finishedLoading, this));
