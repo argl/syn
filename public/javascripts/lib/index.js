@@ -23,14 +23,17 @@ var PlayerView = Marionette.ItemView.extend({
     },
     'change .gain': function(e) {
       e.preventDefault()
-      this.model.set('gain', $(e.currentTarget).val())
+      this.model.set('gain', e.value.newValue)
     }
   },
   onShow: function() {
-    this.$('.gain').slider({
-      formatter: function(value) {
-        return parseFloat(value);
-      }
+    this.gainSlider = this.$('.gain').slider({
+      orientation: 'vertical',
+      value: -3,
+      reversed: true,
+      min: -60,
+      max: 0,
+      step: 1,
     })
   }
 })

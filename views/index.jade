@@ -16,10 +16,8 @@ block content
             option(value="#{value}") #{value}
         | Voice
         select(name='voice')
-          for value in ['us2_mbrola', 'rab_diphone', 'us1_mbrola', 'en1_mbrola', 'us3_mbrola', 'don_diphone', 'kal_diphone', 'nitech_us_slt_arctic_hts']
+          for value in ['don_diphone', 'us2_mbrola', 'rab_diphone', 'us1_mbrola', 'en1_mbrola', 'us3_mbrola', 'kal_diphone']
             option(value="#{value}") #{value}
-        | Efx
-        input(name="efx", type="checkbox", value="1")
         input(type="submit")
       hr
       form#file-frm()
@@ -35,7 +33,12 @@ block content
     .text
       | <%= text %> / <%= voice %> / <%= speed %> / <%= pitch %>
     button.btn.destroy-btn DESTROY
-    input.gain(data-slider-id='gain', type="text", data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.5")
+    .sliders
+      .control
+        input.gain(data-slider-id='gain', type="text")
+      .control
+        | Vol
+
 
 
   script#players-view-template(type="text/html")

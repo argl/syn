@@ -11,6 +11,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.set('pitch', params.pitch)
       this.set('speed', params.speed)
       this.set('voice', params.voice)
+      this.set('gain', -3)
 
       this.set('distort', this.get('distort') || false)
       this.set('distortion_curve', this.get('distortion_curve') || 10)
@@ -20,6 +21,9 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.listenTo(this, 'change:distort', function() {
         this.rewire()
       })
+      this.listenTo(this, 'change:gain', function() {
+        this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
+      })
     },
 
     rewire: function() {
@@ -27,10 +31,11 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.distortion.disconnect()
       if (this.get('distort')) {
         this.bufferSource.connect(this.distortion)
-        this.distortion.connect(this.get('destination'))
+        this.distortion.connect(this.gain)
       } else {
-        this.bufferSource.connect(this.get('destination'))
+        this.bufferSource.connect(this.gain)
       }
+      this.gain.connect(this.get('destination'))
     },
 
     stop: function() {
@@ -56,6 +61,9 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.distortion = context.createWaveShaper()
       this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
       this.distortion.oversample = '4x';
+
+      this.gain = context.createGain();
+      this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
 
       this.rewire()
       
