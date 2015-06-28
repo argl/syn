@@ -3,7 +3,7 @@ extends layout
 block content
   .container
     .starter-template
-      h1 Bootstrap starter template
+      hr
       form#speech-frm(action='/speech_api', method="GET")
         input(name='text', type='text')
         | Pitch
@@ -29,16 +29,18 @@ block content
             option(value="#{value}") #{value}
         input(type="submit")
       hr
-    .row#running
+    #running
 
   script#player-view-template(type="text/html")
-    | PLAYER template
+    .text
+      | <%= text %> / <%= voice %> / <%= speed %> / <%= pitch %>
     button.btn.destroy-btn DESTROY
+    input.gain(data-slider-id='gain', type="text", data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.5")
+
 
   script#players-view-template(type="text/html")
-    | PLAYERS template
-    .player-container
-
+    | players
+    .row.player-container
 
 block script
   script.

@@ -4,6 +4,8 @@ import Moment from 'moment'
 import 'bootstrap'
 import Backbone from "backbone"
 import Marionette from "backbone.marionette"
+import 'bootstrap-slider'
+
 
 import audio from './audio'
 import SamplePlayer from '../models/sampleplayer'
@@ -12,16 +14,28 @@ import SamplePlayer from '../models/sampleplayer'
 
 var PlayerView = Marionette.ItemView.extend({
   template: '#player-view-template',
+  className: 'col-xs-2 player',
   events: {
     'click .destroy-btn': function(e) {
       e.preventDefault()
       this.model.stop()
       this.model.destroy()
+    },
+    'change .gain': function(e) {
+      e.preventDefault()
+      this.model.set('gain', $(e.currentTarget).val())
     }
+  },
+  onShow: function() {
+    this.$('.gain').slider({
+      formatter: function(value) {
+        return parseFloat(value);
+      }
+    })
   }
 })
 
-var PlayersView = Marionette.CollectionView.extend({
+var PlayersView = Marionette.CompositeView.extend({
   template: '#players-view-template',
   childView: PlayerView,
   childViewContainer: ".player-container",
@@ -56,9 +70,7 @@ $(function() {
       voice: $('[name=voice]').val()
     }
     console.log(params)
-    var url = "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
-    console.log(url)
-    loadAndPlaySound(url)
+    loadAndPlaySound(params)
   })
 
   $('#file-frm').on('submit', function(e) {
@@ -71,9 +83,9 @@ $(function() {
     loadAndPlaySound(url)
   })
 
-  function loadAndPlaySound(url) {
+  function loadAndPlaySound(params) {
     var player = new SamplePlayer({
-      url: url,
+      params: params,
       destination: context.destination,
     })
     players.add(player)

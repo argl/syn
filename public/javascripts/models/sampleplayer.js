@@ -3,6 +3,15 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
   var SamplePlayer = Backbone.Model.extend({
 
     initialize: function() {
+      var params  = this.get('params')
+      var url = "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
+      this.set('url', url)
+
+      this.set('text', params.text)
+      this.set('pitch', params.pitch)
+      this.set('speed', params.speed)
+      this.set('voice', params.voice)
+
       this.set('distort', this.get('distort') || false)
       this.set('distortion_curve', this.get('distortion_curve') || 10)
       this.listenTo(this, 'change:distortion_curve', function() {

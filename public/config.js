@@ -20,6 +20,7 @@ System.config({
     "jquery": "github:components/jquery@2.1.4",
     "moment": "github:moment/moment@2.10.3",
     "q": "npm:q@2.0.3",
+    "bootstrap-slider": "github:seiyria/bootstrap-slider@4.10.1",
     "traceur": "github:jmcriffey/bower-traceur@0.0.88",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88",
     "underscore": "github:components/underscore@1.7.0",
@@ -67,6 +68,9 @@ System.config({
     },
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
+    },
+    "github:seiyria/bootstrap-slider@4.10.1": {
+      "jquery": "github:components/jquery@2.1.4"
     },
     "github:systemjs/plugin-css@0.1.12": {
       "clean-css": "npm:clean-css@3.1.9",
