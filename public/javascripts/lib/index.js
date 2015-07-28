@@ -14,7 +14,7 @@ import SamplePlayer from '../models/sampleplayer'
 
 var PlayerView = Marionette.ItemView.extend({
   template: '#player-view-template',
-  className: 'col-xs-2 player',
+  className: 'col-xs-4 player',
   events: {
     'click .destroy-btn': function(e) {
       e.preventDefault()
@@ -24,16 +24,48 @@ var PlayerView = Marionette.ItemView.extend({
     'change .gain': function(e) {
       e.preventDefault()
       this.model.set('gain', e.value.newValue)
-    }
+    },
+    'change .distortion': function(e) {
+      e.preventDefault()
+      this.model.set('distortion', e.value.newValue)
+    },
+    'change .pan_x': function(e) {
+      e.preventDefault()
+      this.model.set('pan_x', e.value.newValue)
+    },
+    'change .pan_y': function(e) {
+      e.preventDefault()
+      this.model.set('pan_y', e.value.newValue)
+    },
   },
   onShow: function() {
     this.gainSlider = this.$('.gain').slider({
-      orientation: 'vertical',
+      orientation: 'horizontal',
       value: -3,
-      reversed: true,
       min: -60,
       max: 0,
       step: 1,
+    })
+    this.distortionSlider = this.$('.distortion').slider({
+      orientation: 'horizontal',
+      value: 0,
+      min: 0,
+      max: 2000,
+      step: 1,
+    })
+    
+    this.panxslider = this.$('.pan_x').slider({
+      orientation: 'horizontal',
+      value: 0,
+      min: -100,
+      max: 100,
+    })
+    this.panxslider = this.$('.pan_y').slider({
+      orientation: 'horizontal',
+      value: 5,
+      min: 1,
+      max: 10,
+      step: 0.01,
     })
   }
 })

@@ -12,13 +12,23 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.set('speed', params.speed)
       this.set('voice', params.voice)
       this.set('gain', -3)
+      this.set('distortion', 0)
+      this.set('pan_x', 0)
+      this.set('pan_y', 5)
 
-      this.set('distort', this.get('distort') || false)
-      this.set('distortion_curve', this.get('distortion_curve') || 10)
-      this.listenTo(this, 'change:distortion_curve', function() {
-        this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
+
+      // this.set('distort', this.get('distort') || false)
+      // this.listenTo(this, 'change:distortion_curve', function() {
+      //   this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
+      // })
+      this.listenTo(this, 'change:pan_x', function() {
+        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
-      this.listenTo(this, 'change:distort', function() {
+      this.listenTo(this, 'change:pan_y', function() {
+        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+      })
+
+      this.listenTo(this, 'change:distortion', function() {
         this.rewire()
       })
       this.listenTo(this, 'change:gain', function() {
@@ -29,13 +39,15 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     rewire: function() {
       this.bufferSource.disconnect()
       this.distortion.disconnect()
-      if (this.get('distort')) {
+      if (this.get('distortion') > 0) {
+        this.distortion.curve = this.makeDistortionCurve(this.get('distortion'))
         this.bufferSource.connect(this.distortion)
         this.distortion.connect(this.gain)
       } else {
         this.bufferSource.connect(this.gain)
       }
-      this.gain.connect(this.get('destination'))
+      this.gain.connect(this.panner)
+      this.panner.connect(this.get('destination'))
     },
 
     stop: function() {
@@ -59,11 +71,25 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.bufferSource.loop = true
 
       this.distortion = context.createWaveShaper()
-      this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
+      //this.distortion.curve = this.makeDistortionCurve(10);
       this.distortion.oversample = '4x';
 
       this.gain = context.createGain();
       this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
+
+      this.panner = context.createPanner();
+      this.panner.panningModel = 'HRTF';
+      this.panner.distanceModel = 'inverse';
+      this.panner.refDistance = 1;
+      this.panner.maxDistance = 10000;
+      this.panner.rolloffFactor = 1;
+      this.panner.coneInnerAngle = 180;
+      this.panner.coneOuterAngle = 45;
+      this.panner.coneOuterGain = 0.001;
+      this.panner.setOrientation(0,-1,0);
+      this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
+
+      window.panner = this.panner
 
       this.rewire()
       
@@ -73,12 +99,14 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     },
 
     makeDistortionCurve: function(amount) {
-      var k = typeof amount === 'number' ? amount : 50,
-      n_samples = 44100,
-      curve = new Float32Array(n_samples),
-      deg = Math.PI / 180,
-      i = 0,
-      x;
+      var k = typeof amount === 'number' ? amount : 50
+      var n_samples = 44100
+      var curve = new Float32Array(n_samples)
+      var deg = Math.PI / 180
+      var i = 0
+      var x
+      console.log(k)
+
       for ( ; i < n_samples; ++i ) {
         x = i * 2 / n_samples - 1;
         curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );

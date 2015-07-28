@@ -9,11 +9,11 @@ block content
         | Pitch
         select(name='pitch')
           for value in [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300]
-            option(value="#{value}") #{value}
+            option(value="#{value}", selected=(value === 0)) #{value}
         | Speed
         select(name='speed')
           for value in [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300]
-            option(value="#{value}") #{value}
+            option(value="#{value}", selected=(value === 0)) #{value}
         | Voice
         select(name='voice')
           for value in ['don_diphone', 'us2_mbrola', 'rab_diphone', 'us1_mbrola', 'en1_mbrola', 'us3_mbrola', 'kal_diphone']
@@ -31,13 +31,32 @@ block content
 
   script#player-view-template(type="text/html")
     .text
-      | <%= text %> / <%= voice %> / <%= speed %> / <%= pitch %>
-    button.btn.destroy-btn DESTROY
+      | <%= text || '[auto]' %> / <%= voice %> / <%= speed %> / <%= pitch %>
     .sliders
       .control
         input.gain(data-slider-id='gain', type="text")
       .control
         | Vol
+    .sliders
+      .control
+        input.distortion(data-slider-id='distortion', type="text")
+      .control
+        | Dist
+
+    .sliders
+      .control
+        input.pan_x(data-slider-id='pan_x', type="text")
+      .control
+        | Pan X
+
+    .sliders
+      .control
+        input.pan_y(data-slider-id='pan_y', type="text")
+      .control
+        | Pan Y
+
+
+    button.btn.destroy-btn DESTROY
 
 
 
