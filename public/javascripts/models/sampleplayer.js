@@ -4,18 +4,25 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
 
     initialize: function() {
       var params  = this.get('params')
-      var url = "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
+      var url
+      if (params.speech) {
+        url = "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
+        this.set('speech', true)
+        this.set('text', params.text)
+        this.set('pitch', params.pitch)
+        this.set('speed', params.speed)
+        this.set('voice', params.voice)
+      } else {
+        url = "/sounds/test/" + encodeURIComponent(params.file)
+        this.set('file', params.file)
+      }
       this.set('url', url)
 
-      this.set('text', params.text)
-      this.set('pitch', params.pitch)
-      this.set('speed', params.speed)
-      this.set('voice', params.voice)
       this.set('gain', -3)
       this.set('distortion', 0)
       this.set('pan_x', 0)
       this.set('pan_y', 5)
-
+      this.set('pitch', 1.0)
 
       // this.set('distort', this.get('distort') || false)
       // this.listenTo(this, 'change:distortion_curve', function() {
@@ -25,6 +32,10 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
         this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
       this.listenTo(this, 'change:pan_y', function() {
+        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+      })
+
+      this.listenTo(this, 'change:pitch', function() {
         this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
 

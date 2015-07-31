@@ -85,8 +85,6 @@ $(function() {
     collection: players
   })
 
-  window.pv = playersview
-
   var app = new Marionette.Application();
   app.addRegions({
     playersRegion: "#running",
@@ -96,26 +94,26 @@ $(function() {
 
   app.playersRegion.show(playersview)
 
+  // speech form handling
   $('#speech-frm').on('submit', function(e) {
     e.preventDefault()
     var params = {
+      speech: true,
       text: $('[name=text]').val(),
       pitch: $('[name=pitch]').val(),
       speed: $('[name=speed]').val(),
       voice: $('[name=voice]').val()
     }
-    console.log(params)
     loadAndPlaySound(params)
   })
 
+  // file input handling
   $('#file-frm').on('submit', function(e) {
     e.preventDefault()
     var params = {
       file: $('[name=file]').val()
     }
-    console.log(params)
-    var url = "/sounds/test/" + encodeURIComponent(params.file)
-    loadAndPlaySound(url)
+    loadAndPlaySound(params)
   })
 
   function loadAndPlaySound(params) {
@@ -123,11 +121,12 @@ $(function() {
       params: params,
       destination: context.destination,
     })
-    players.add(player)
+    addAndPreparePlayer(player)
+  }
+
+  function addAndPreparePlayer(player) {
     player.prepare(context)
     .then(function(player) {
-      console.log(player)
-      window.player = player
       players.add(player)
     })
   }
@@ -137,14 +136,6 @@ $(function() {
       var source1 = context.createBufferSource();
       var state = {}
       source1.buffer = bufferList[0];
-      // if ( $('[name=efx]').is(":checked")) {
-      //   source1.connect(efx.convolver);
-      //   efx.convolver.connect(context.destination);
-      //   state.efx = true
-      // } else {
-      //   source1.connect(context.destination)
-      //   state.efx = false
-      // }
       source1.connect(context.destination)
       
       state.efx = false
@@ -206,22 +197,49 @@ $(function() {
   }
 
   var context = audio.createContext()
+  window.audioContext = context
 
-  var iphone_enabled = false
-  window.addEventListener('touchstart', function() {
-    if (!iphone_enabled) {
-      // create new buffer source for playback with an already
-      // loaded and decoded empty sound file
-      var source = context.createOscillator()
-      // connect to output (your speakers)
-      source.connect(context.destination);
-      // play the file
-      source.noteOn(0);
-      source.noteOff(context.currentTime + 1000);
-      iphone_enabled = true;
-      
+
+  // get user inputs
+  if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
+    alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
+  } else {
+    MediaStreamTrack.getSources(gotSources);
+  }
+
+  function gotSources(sourceInfos) {
+    var audioSelect = document.querySelector('select#audio-sources');
+    for (var i = 0; i !== sourceInfos.length; ++i) {
+      var sourceInfo = sourceInfos[i];
+      var option = document.createElement('option');
+      option.value = sourceInfo.id;
+      if (sourceInfo.kind === 'audio') {
+        option.text = sourceInfo.label || 'microphone ' + (audioSelect.length + 1);
+        audioSelect.appendChild(option);
+      } else {
+        console.log('Some other kind of source: ', sourceInfo);
+      }
     }
-  }, false);
+  }
+
+  // navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+
+  // var iphone_enabled = false
+  // window.addEventListener('touchstart', function() {
+  //   if (!iphone_enabled) {
+  //     // create new buffer source for playback with an already
+  //     // loaded and decoded empty sound file
+  //     var source = context.createOscillator()
+  //     // connect to output (your speakers)
+  //     source.connect(context.destination);
+  //     // play the file
+  //     source.noteOn(0);
+  //     source.noteOff(context.currentTime + 1000);
+  //     iphone_enabled = true;
+      
+  //   }
+  // }, false);
 
   // // Create the source.
   // var source = context.createBufferSource();
