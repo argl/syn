@@ -1,3 +1,13 @@
 body {
   padding-top: 50px;
 }
+
+canvas#meter {
+  border: 1px solid black;
+  width: 100%;
+  height: 30px;
+}
+
+.slider.slider-horizontal {
+  width: 100%;
+}

@@ -15,6 +15,7 @@ import SamplePlayer from '../models/sampleplayer'
 var PlayerView = Marionette.ItemView.extend({
   template: '#player-view-template',
   className: 'col-xs-4 player',
+
   events: {
     'click .destroy-btn': function(e) {
       e.preventDefault()
@@ -38,7 +39,24 @@ var PlayerView = Marionette.ItemView.extend({
       this.model.set('pan_y', e.value.newValue)
     },
   },
+
   onShow: function() {
+
+    var canvas = this.$('canvas#meter').get(0)
+    this.listenTo(this.model, 'change:meter', function(l, r) {
+      var ctx = canvas.getContext('2d')
+      var w = canvas.width;
+      var h = canvas.height;
+      ctx.fillStyle = '#555';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#090';
+      var half_height = Math.floor(h / 2)
+      ctx.fillRect(0, 0,           Math.floor(w + (w / 72) * l), half_height);
+      ctx.fillRect(0, half_height, Math.floor(w + (w / 72) * r), half_height);
+    })
+
+
+
     this.gainSlider = this.$('.gain').slider({
       orientation: 'horizontal',
       value: -3,
@@ -67,6 +85,8 @@ var PlayerView = Marionette.ItemView.extend({
       max: 10,
       step: 0.01,
     })
+
+
   }
 })
 

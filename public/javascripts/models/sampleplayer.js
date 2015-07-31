@@ -59,12 +59,16 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       }
       this.gain.connect(this.panner)
       this.panner.connect(this.get('destination'))
+      this.panner.connect(this.analyser)
+      this.analyser.connect(this.get('destination'))
     },
 
     stop: function() {
       this.bufferSource.stop()
       this.bufferSource.disconnect()
       this.distortion.disconnect()
+      this.panner.disconnect()
+      this.analyser.disconnect()
     },
 
     prepare: function(context) {
@@ -77,6 +81,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
 
     finishedLoading: function(bufferList) {
       var context = this.context
+      var model = this
       this.bufferSource = context.createBufferSource();
       this.bufferSource.buffer = bufferList[0];
       this.bufferSource.loop = true
@@ -100,7 +105,25 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.panner.setOrientation(0,-1,0);
       this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
 
-      window.panner = this.panner
+      this.analyser = context.createScriptProcessor(1024,2,2);
+      this.analyser.onaudioprocess = function(e){
+        var out_l = e.outputBuffer.getChannelData(0);
+        var out_r = e.outputBuffer.getChannelData(1);
+        var in_l = e.inputBuffer.getChannelData(0);
+        var in_r = e.inputBuffer.getChannelData(1);
+        var max_l = 0, max_r = 0;
+        for(var i = 0; i < in_l.length; i++){
+          out_l[i] = 0;
+          max_l= in_l[i] > max_l ? in_l[i] : max_l;
+        }
+        for(var i = 0; i < in_r.length; i++){
+          out_r[i] = 0;
+          max_r= in_r[i] > max_r ? in_r[i] : max_r;
+        }
+        max_l = 20*Math.log(Math.max(max_l,Math.pow(10,-72/20)))/Math.LN10;
+        max_r = 20*Math.log(Math.max(max_r,Math.pow(10,-72/20)))/Math.LN10;
+        model.trigger('change:meter', max_l, max_r)
+      }
 
       this.rewire()
       
