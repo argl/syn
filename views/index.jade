@@ -21,12 +21,18 @@ block content
         input(type="submit")
       hr
       form#file-frm()
-        | Sample
+        | Sample 
         select(name='file')
           for value in ['eleven.wav', 'huge_DC.wav', 'nine.wav', 'nineeleven.wav']
             option(value="#{value}") #{value}
         input(type="submit")
       hr
+
+      form#input-select-frm
+        | Input 
+        select#audio-sources
+      hr
+
     #running
 
   script#player-view-template(type="text/html")
