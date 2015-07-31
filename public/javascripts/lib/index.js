@@ -40,21 +40,38 @@ var PlayerView = Marionette.ItemView.extend({
     },
   },
 
-  onShow: function() {
-
-    var canvas = this.$('canvas#meter').get(0)
-    this.listenTo(this.model, 'change:meter', function(l, r) {
-      var ctx = canvas.getContext('2d')
-      var w = canvas.width;
-      var h = canvas.height;
-      ctx.fillStyle = '#555';
-      ctx.fillRect(0,0,w,h);
-      ctx.fillStyle = '#090';
-      var half_height = Math.floor(h / 2)
-      ctx.fillRect(0, 0,           Math.floor(w + (w / 72) * l), half_height);
-      ctx.fillRect(0, half_height, Math.floor(w + (w / 72) * r), half_height);
+  drawMeter: function() {
+    var view = this
+    view.meter_state.ctx.fillStyle = '#555';
+    view.meter_state.ctx.fillRect(0, 0, view.meter_state.w, view.meter_state.h);
+    view.meter_state.ctx.fillStyle = '#090';
+    var half_height = Math.floor(view.meter_state.h / 2) - 1
+    view.meter_state.ctx.fillRect(0, 0,                Math.floor(72 + view.meter_state.last_l), half_height);
+    view.meter_state.ctx.fillRect(0, half_height + 2,  Math.floor(72 + view.meter_state.last_r), half_height);
+    requestAnimationFrame(function() {
+      view.drawMeter.call(view)
     })
+  },
 
+  onShow: function() {
+    var view = this
+    requestAnimationFrame(function() {
+      var canvas = view.$('canvas#meter').get(0)
+      view.meter_state = {
+        ctx: canvas.getContext('2d'),
+        w: canvas.width,
+        h: canvas.height,
+        last_l: 0,
+        last_r: 0,
+      }
+
+      view.drawMeter.call(view)
+
+      view.listenTo(view.model, 'change:meter', function(l, r) {
+        view.meter_state.last_l = l
+        view.meter_state.last_r = r
+      })
+    })
 
 
     this.gainSlider = this.$('.gain').slider({

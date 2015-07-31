@@ -105,21 +105,23 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.panner.setOrientation(0,-1,0);
       this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
 
-      this.analyser = context.createScriptProcessor(1024,2,2);
+      this.analyser = context.createScriptProcessor(2048,2,2);
       this.analyser.onaudioprocess = function(e){
         var out_l = e.outputBuffer.getChannelData(0);
         var out_r = e.outputBuffer.getChannelData(1);
         var in_l = e.inputBuffer.getChannelData(0);
         var in_r = e.inputBuffer.getChannelData(1);
         var max_l = 0, max_r = 0;
-        for(var i = 0; i < in_l.length; i++){
-          out_l[i] = 0;
-          max_l= in_l[i] > max_l ? in_l[i] : max_l;
-        }
-        for(var i = 0; i < in_r.length; i++){
-          out_r[i] = 0;
-          max_r= in_r[i] > max_r ? in_r[i] : max_r;
-        }
+        max_l = Math.max.apply(null, in_l)
+        max_r = Math.max.apply(null, in_r)
+        // for(var i = 0; i < in_l.length; i++){
+        //   out_l[i] = 0;
+        //   max_l= in_l[i] > max_l ? in_l[i] : max_l;
+        // }
+        // for(var i = 0; i < in_r.length; i++){
+        //   out_r[i] = 0;
+        //   max_r= in_r[i] > max_r ? in_r[i] : max_r;
+        // }
         max_l = 20*Math.log(Math.max(max_l,Math.pow(10,-72/20)))/Math.LN10;
         max_r = 20*Math.log(Math.max(max_r,Math.pow(10,-72/20)))/Math.LN10;
         model.trigger('change:meter', max_l, max_r)
