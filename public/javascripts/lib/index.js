@@ -59,6 +59,7 @@ var PlayerView = Marionette.ItemView.extend({
       e.preventDefault()
       this.model.set('reverb_type', parseInt(e.currentTarget.value))
     },
+
   },
 
   drawMeter: function() {
@@ -145,11 +146,6 @@ var PlayerView = Marionette.ItemView.extend({
       step: 1
     })
 
-
-
-
-
-
   }
 })
 
@@ -157,6 +153,25 @@ var PlayersView = Marionette.CompositeView.extend({
   template: '#players-view-template',
   childView: PlayerView,
   childViewContainer: ".player-container",
+
+  events: {
+    'click #start-trigger-btn': function(e) {
+      e.preventDefault()
+      var self = this
+      var triggerfun = function() {
+        var p = self.collection.models[Math.floor(Math.random() * self.collection.models.length)]
+        p.play()
+      }
+      this.listenTo(this.collection, 'change:play', function(playing) {
+        console.log("heppp", playing)
+        if (!playing) {
+          triggerfun()
+        }
+      })
+      triggerfun()
+    }
+  }
+
 })
 
 
@@ -198,6 +213,8 @@ $(function() {
     }
     loadAndPlaySound(params)
   })
+
+
 
   function loadAndPlaySound(params) {
     var player = new SamplePlayer({

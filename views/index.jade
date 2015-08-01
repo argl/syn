@@ -33,11 +33,12 @@ block content
         select#audio-sources
       hr
 
+
     #running
 
   script#player-view-template(type="text/html")
     .text
-      | <%= text || '[auto]' %> / <%= voice %> / <%= speed %> / <%= pitch %>
+      
     .sliders
       .control
         input.gain(data-slider-id='gain', type="text")
@@ -99,6 +100,10 @@ block content
 
   script#players-view-template(type="text/html")
     | players
+    .row
+      button#start-trigger-btn Start Trigger
+      hr
+
     .row.player-container
 
 block script
