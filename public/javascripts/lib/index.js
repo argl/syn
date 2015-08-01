@@ -92,16 +92,17 @@ var PlayerView = Marionette.ItemView.extend({
     this.panxslider = this.$('.pan_x').slider({
       orientation: 'horizontal',
       value: 0,
-      min: -100,
-      max: 100,
+      min: -1,
+      max: 1,
+      step: 0.001
     })
-    this.panxslider = this.$('.pan_y').slider({
-      orientation: 'horizontal',
-      value: 5,
-      min: 1,
-      max: 10,
-      step: 0.01,
-    })
+    // this.panxslider = this.$('.pan_y').slider({
+    //   orientation: 'horizontal',
+    //   value: 5,
+    //   min: 1,
+    //   max: 10,
+    //   step: 0.01,
+    // })
 
 
   }

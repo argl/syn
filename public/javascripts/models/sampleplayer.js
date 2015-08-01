@@ -21,7 +21,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.set('gain', -3)
       this.set('distortion', 0)
       this.set('pan_x', 0)
-      this.set('pan_y', 5)
+      // this.set('pan_y', 5)
       this.set('pitch', 1.0)
 
       // this.set('distort', this.get('distort') || false)
@@ -29,14 +29,15 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       //   this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
       // })
       this.listenTo(this, 'change:pan_x', function() {
-        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+        this.panner.pan.value = this.get('pan_x')
+        // this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
-      this.listenTo(this, 'change:pan_y', function() {
-        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
-      })
+      // this.listenTo(this, 'change:pan_y', function() {
+      //   this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+      // })
 
       this.listenTo(this, 'change:pitch', function() {
-        this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+        // this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
 
       this.listenTo(this, 'change:distortion', function() {
@@ -93,17 +94,19 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.gain = context.createGain();
       this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
 
-      this.panner = context.createPanner();
-      this.panner.panningModel = 'HRTF';
-      this.panner.distanceModel = 'inverse';
-      this.panner.refDistance = 1;
-      this.panner.maxDistance = 10000;
-      this.panner.rolloffFactor = 1;
-      this.panner.coneInnerAngle = 180;
-      this.panner.coneOuterAngle = 45;
-      this.panner.coneOuterGain = 0.001;
-      this.panner.setOrientation(0,-1,0);
-      this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
+      // this.panner = context.createPanner();
+      // this.panner.panningModel = 'HRTF';
+      // this.panner.distanceModel = 'inverse';
+      // this.panner.refDistance = 1;
+      // this.panner.maxDistance = 10000;
+      // this.panner.rolloffFactor = 1;
+      // this.panner.coneInnerAngle = 180;
+      // this.panner.coneOuterAngle = 45;
+      // this.panner.coneOuterGain = 0.001;
+      // this.panner.setOrientation(0,-1,0);
+      // this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
+
+      this.panner = context.createStereoPanner();
 
       this.analyser = context.createScriptProcessor(2048,2,2);
       this.analyser.onaudioprocess = function(e){
