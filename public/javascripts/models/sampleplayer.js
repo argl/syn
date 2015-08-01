@@ -21,23 +21,14 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.set('gain', -3)
       this.set('distortion', 0)
       this.set('pan_x', 0)
-      // this.set('pan_y', 5)
-      this.set('pitch', 1.0)
+      this.set('rate', 1)
 
-      // this.set('distort', this.get('distort') || false)
-      // this.listenTo(this, 'change:distortion_curve', function() {
-      //   this.distortion.curve = this.makeDistortionCurve(this.get('distortion_curve'));
-      // })
       this.listenTo(this, 'change:pan_x', function() {
         this.panner.pan.value = this.get('pan_x')
-        // this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
       })
-      // this.listenTo(this, 'change:pan_y', function() {
-      //   this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
-      // })
 
-      this.listenTo(this, 'change:pitch', function() {
-        // this.panner.setPosition(this.get('pan_x'), this.get('pan_y'), 0);
+      this.listenTo(this, 'change:rate', function() {
+        this.bufferSource.playbackRate.value = this.get('rate')
       })
 
       this.listenTo(this, 'change:distortion', function() {
@@ -51,6 +42,10 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     rewire: function() {
       this.bufferSource.disconnect()
       this.distortion.disconnect()
+      this.gain.disconnect()
+      this.panner.disconnect()
+      this.analyser.disconnect()
+
       if (this.get('distortion') > 0) {
         this.distortion.curve = this.makeDistortionCurve(this.get('distortion'))
         this.bufferSource.connect(this.distortion)
@@ -65,11 +60,9 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     },
 
     stop: function() {
-      this.bufferSource.stop()
-      this.bufferSource.disconnect()
-      this.distortion.disconnect()
-      this.panner.disconnect()
-      this.analyser.disconnect()
+      if (this.bufferSource) {
+        this.bufferSource.stop()
+      }
     },
 
     prepare: function(context) {
@@ -83,28 +76,17 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     finishedLoading: function(bufferList) {
       var context = this.context
       var model = this
-      this.bufferSource = context.createBufferSource();
-      this.bufferSource.buffer = bufferList[0];
-      this.bufferSource.loop = true
+      this.bufferList = bufferList
+      // this.bufferSource = context.createBufferSource();
+      // this.bufferSource.buffer = bufferList[0];
+      //this.bufferSource.loop = true
+      // this.bufferSource.playbackRate.value = this.get('detune')
 
       this.distortion = context.createWaveShaper()
-      //this.distortion.curve = this.makeDistortionCurve(10);
       this.distortion.oversample = '4x';
 
       this.gain = context.createGain();
       this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
-
-      // this.panner = context.createPanner();
-      // this.panner.panningModel = 'HRTF';
-      // this.panner.distanceModel = 'inverse';
-      // this.panner.refDistance = 1;
-      // this.panner.maxDistance = 10000;
-      // this.panner.rolloffFactor = 1;
-      // this.panner.coneInnerAngle = 180;
-      // this.panner.coneOuterAngle = 45;
-      // this.panner.coneOuterGain = 0.001;
-      // this.panner.setOrientation(0,-1,0);
-      // this.panner.setPosition(this.get('pan_x'), 0, this.get('pan_y'));
 
       this.panner = context.createStereoPanner();
 
@@ -117,24 +99,28 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
         var max_l = 0, max_r = 0;
         max_l = Math.max.apply(null, in_l)
         max_r = Math.max.apply(null, in_r)
-        // for(var i = 0; i < in_l.length; i++){
-        //   out_l[i] = 0;
-        //   max_l= in_l[i] > max_l ? in_l[i] : max_l;
-        // }
-        // for(var i = 0; i < in_r.length; i++){
-        //   out_r[i] = 0;
-        //   max_r= in_r[i] > max_r ? in_r[i] : max_r;
-        // }
         max_l = 20*Math.log(Math.max(max_l,Math.pow(10,-72/20)))/Math.LN10;
         max_r = 20*Math.log(Math.max(max_r,Math.pow(10,-72/20)))/Math.LN10;
         model.trigger('change:meter', max_l, max_r)
       }
 
-      this.rewire()
+      //this.rewire()
       
-      this.bufferSource.start(0)
-      this.set('playing', true)
+      //this.bufferSource.start(0)
       this.deferred.resolve(this)
+    },
+
+    play: function() {
+      var context = this.context
+      if (this.bufferSource) {
+        this.bufferSource.stop()
+      }
+      this.bufferSource = context.createBufferSource()
+      this.bufferSource.buffer = this.bufferList[0]
+      this.bufferSource.playbackRate.value = this.get('rate')
+      //this.bufferSource.loop = true
+      this.rewire()
+      this.bufferSource.start(0)
     },
 
     makeDistortionCurve: function(amount) {
@@ -144,7 +130,6 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       var deg = Math.PI / 180
       var i = 0
       var x
-      console.log(k)
 
       for ( ; i < n_samples; ++i ) {
         x = i * 2 / n_samples - 1;

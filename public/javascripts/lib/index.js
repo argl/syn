@@ -22,6 +22,14 @@ var PlayerView = Marionette.ItemView.extend({
       this.model.stop()
       this.model.destroy()
     },
+    'click .play-btn': function(e) {
+      e.preventDefault()
+      this.model.play()
+    },
+    'click .stop-btn': function(e) {
+      e.preventDefault()
+      this.model.stop()
+    },
     'change .gain': function(e) {
       e.preventDefault()
       this.model.set('gain', e.value.newValue)
@@ -34,9 +42,9 @@ var PlayerView = Marionette.ItemView.extend({
       e.preventDefault()
       this.model.set('pan_x', e.value.newValue)
     },
-    'change .pan_y': function(e) {
+    'change .rate': function(e) {
       e.preventDefault()
-      this.model.set('pan_y', e.value.newValue)
+      this.model.set('rate', e.value.newValue)
     },
   },
 
@@ -61,8 +69,8 @@ var PlayerView = Marionette.ItemView.extend({
         ctx: canvas.getContext('2d'),
         w: canvas.width,
         h: canvas.height,
-        last_l: 0,
-        last_r: 0,
+        last_l: -72,
+        last_r: -72,
       }
 
       view.drawMeter.call(view)
@@ -96,13 +104,14 @@ var PlayerView = Marionette.ItemView.extend({
       max: 1,
       step: 0.001
     })
-    // this.panxslider = this.$('.pan_y').slider({
-    //   orientation: 'horizontal',
-    //   value: 5,
-    //   min: 1,
-    //   max: 10,
-    //   step: 0.01,
-    // })
+
+    this.rateslider = this.$('.rate').slider({
+      orientation: 'horizontal',
+      value: 1,
+      min: 0.1,
+      max: 5,
+      step: 0.1
+    })
 
 
   }

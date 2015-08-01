@@ -51,19 +51,23 @@ block content
 
     .sliders
       .control
+        input.rate(data-slider-id='rate', type="text")
+      .control
+        | Rate
+
+
+    .sliders
+      .control
         input.pan_x(data-slider-id='pan_x', type="text")
       .control
         | Pan
 
-    //- .sliders
-    //-   .control
-    //-     input.pan_y(data-slider-id='pan_y', type="text")
-    //-   .control
-    //-     | Pan Y
     .meter
       canvas#meter(width=72, height=30)
 
 
+    button.btn.play-btn PLAY
+    button.btn.stop-btn STOP
     button.btn.destroy-btn DESTROY
 
 
