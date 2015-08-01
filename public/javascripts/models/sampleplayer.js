@@ -44,6 +44,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.distortion.disconnect()
       this.gain.disconnect()
       this.panner.disconnect()
+      this.convolver.disconnect()
       this.analyser.disconnect()
 
       if (this.get('distortion') > 0) {
@@ -54,14 +55,18 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
         this.bufferSource.connect(this.gain)
       }
       this.gain.connect(this.panner)
+      this.panner.connect(this.convolver)
       this.panner.connect(this.get('destination'))
-      this.panner.connect(this.analyser)
+      this.convolver.connect(this.get('destination'))
+
+      this.convolver.connect(this.analyser)
       this.analyser.connect(this.get('destination'))
     },
 
     stop: function() {
       if (this.bufferSource) {
         this.bufferSource.stop()
+        this.trigger('change:play', false)
       }
     },
 
@@ -104,6 +109,10 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
         model.trigger('change:meter', max_l, max_r)
       }
 
+      this.convolver = context.createConvolver();
+      this.convolver.buffer = app.impulseResponseBuffers[0];
+
+
       //this.rewire()
       
       //this.bufferSource.start(0)
@@ -118,9 +127,14 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.bufferSource = context.createBufferSource()
       this.bufferSource.buffer = this.bufferList[0]
       this.bufferSource.playbackRate.value = this.get('rate')
-      //this.bufferSource.loop = true
+      this.bufferSource.loop = false
+      this.bufferSource.onended = _.bind(function() {
+        this.trigger('change:play', false)
+      }, this)
       this.rewire()
       this.bufferSource.start(0)
+      this.trigger('change:play', true)
+
     },
 
     makeDistortionCurve: function(amount) {

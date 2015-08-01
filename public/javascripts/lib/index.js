@@ -81,6 +81,10 @@ var PlayerView = Marionette.ItemView.extend({
       })
     })
 
+    this.listenTo(this.model, 'change:play', function(playing) {
+      this.$('.play-btn').prop('disabled', !!playing)
+      this.$('.stop-btn').prop('disabled', !!!playing)
+    })
 
     this.gainSlider = this.$('.gain').slider({
       orientation: 'horizontal',
@@ -245,6 +249,22 @@ $(function() {
 
   var context = audio.createContext()
   window.audioContext = context
+  app.context = context
+
+  //load impulse responses
+  var loader = new audio.BufferLoader(context, [
+    "sounds/impulse-response/auto_park.wav",
+    "sounds/impulse-response/echo_plate.wav",
+    "sounds/impulse-response/echo.wav",
+    "sounds/impulse-response/muffler.wav",
+    "sounds/impulse-response/spring.wav",
+    "sounds/impulse-response/sudden_stop.wav",
+    "sounds/impulse-response/telephone.wav",
+  ], function(buffers) {
+    app.impulseResponseBuffers = buffers
+    console.log("loaded", buffers)
+  });
+  loader.load();
 
 
   // get user inputs

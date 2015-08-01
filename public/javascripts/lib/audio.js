@@ -103,10 +103,14 @@ function RoomEffectsSample(context, cb) {
 
   // Load all of the needed impulse responses and the actual sample.
   var loader = new BufferLoader(context, [
-    "sounds/impulse-response/spring.wav",
+    "sounds/impulse-response/auto_park.wav",
+    "sounds/impulse-response/echo_plate.wav",
     "sounds/impulse-response/echo.wav",
-    "sounds/impulse-response/telephone.wav",
     "sounds/impulse-response/muffler.wav",
+    "sounds/impulse-response/spring.wav",
+    "sounds/impulse-response/sudden_stop.wav",
+    "sounds/impulse-response/telephone.wav",
+
   ], onLoaded);
 
   function onLoaded(buffers) {
