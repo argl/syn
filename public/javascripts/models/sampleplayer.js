@@ -22,6 +22,9 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.set('distortion', 0)
       this.set('pan_x', 0)
       this.set('rate', 1)
+      this.set('reverb_type', 0)
+      this.set('clean_gain', 0)
+      this.set('reverb_gain', -60)
 
       this.listenTo(this, 'change:pan_x', function() {
         this.panner.pan.value = this.get('pan_x')
@@ -34,8 +37,19 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       this.listenTo(this, 'change:distortion', function() {
         this.rewire()
       })
+
       this.listenTo(this, 'change:gain', function() {
         this.gain.gain.value = Math.pow(10, (this.get('gain')/10));
+      })
+      this.listenTo(this, 'change:clean_gain', function() {
+        this.cleanGain.gain.value = Math.pow(10, (this.get('clean_gain')/10));
+      })
+      this.listenTo(this, 'change:reverb_gain', function() {
+        this.reverbGain.gain.value = Math.pow(10, (this.get('reverb_gain')/10));
+      })
+
+      this.listenTo(this, 'change:reverb_type', function() {
+        this.convolver.buffer = app.impulseResponseBuffers[this.get('reverb_type')];
       })
     },
 
@@ -56,11 +70,17 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       }
       this.gain.connect(this.panner)
       this.panner.connect(this.convolver)
-      this.panner.connect(this.get('destination'))
-      this.convolver.connect(this.get('destination'))
 
-      this.convolver.connect(this.analyser)
+      this.panner.connect(this.cleanGain)
+      this.cleanGain.connect(this.get('destination'))
+
+      this.convolver.connect(this.reverbGain)
+      this.reverbGain.connect(this.get('destination'))
+
+      this.cleanGain.connect(this.analyser)
+      this.reverbGain.connect(this.analyser)
       this.analyser.connect(this.get('destination'))
+
     },
 
     stop: function() {
@@ -82,10 +102,6 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       var context = this.context
       var model = this
       this.bufferList = bufferList
-      // this.bufferSource = context.createBufferSource();
-      // this.bufferSource.buffer = bufferList[0];
-      //this.bufferSource.loop = true
-      // this.bufferSource.playbackRate.value = this.get('detune')
 
       this.distortion = context.createWaveShaper()
       this.distortion.oversample = '4x';
@@ -110,8 +126,12 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       }
 
       this.convolver = context.createConvolver();
-      this.convolver.buffer = app.impulseResponseBuffers[0];
+      this.convolver.buffer = app.impulseResponseBuffers[this.get('reverb_type')];
 
+      this.cleanGain = context.createGain();
+      this.cleanGain.gain.value = Math.pow(10, (this.get('clean_gain')/10));
+      this.reverbGain = context.createGain();
+      this.reverbGain.gain.value = Math.pow(10, (this.get('reverb_gain')/10));
 
       //this.rewire()
       

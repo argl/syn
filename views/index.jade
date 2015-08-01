@@ -62,6 +62,31 @@ block content
       .control
         | Pan
 
+    .sliders
+      .control
+        select.reverb_type
+          option(value=0) auto_park
+          option(value=1) echo_plate
+          option(value=2) echo
+          option(value=3) muffler
+          option(value=4) spring
+          option(value=5) sudden_stop
+          option(value=6) telephone
+      .control
+        | Reverb type
+
+    .sliders
+      .control
+        input.clean_gain(data-slider-id='clean_gain', type="text")
+      .control
+        | Clean Vol
+    .sliders
+      .control
+        input.reverb_gain(data-slider-id='reverb_gain', type="text")
+      .control
+        | Reverb Vol
+
+
     .meter
       canvas#meter(width=72, height=30)
 

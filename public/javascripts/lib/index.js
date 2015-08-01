@@ -46,6 +46,19 @@ var PlayerView = Marionette.ItemView.extend({
       e.preventDefault()
       this.model.set('rate', e.value.newValue)
     },
+
+    'change .reverb_gain': function(e) {
+      e.preventDefault()
+      this.model.set('reverb_gain', e.value.newValue)
+    },
+    'change .clean_gain': function(e) {
+      e.preventDefault()
+      this.model.set('clean_gain', e.value.newValue)
+    },
+    'change .reverb_type': function(e) {
+      e.preventDefault()
+      this.model.set('reverb_type', parseInt(e.currentTarget.value))
+    },
   },
 
   drawMeter: function() {
@@ -86,14 +99,14 @@ var PlayerView = Marionette.ItemView.extend({
       this.$('.stop-btn').prop('disabled', !!!playing)
     })
 
-    this.gainSlider = this.$('.gain').slider({
+    this.$('.gain').slider({
       orientation: 'horizontal',
       value: -3,
       min: -60,
       max: 0,
       step: 1,
     })
-    this.distortionSlider = this.$('.distortion').slider({
+    this.$('.distortion').slider({
       orientation: 'horizontal',
       value: 0,
       min: 0,
@@ -101,7 +114,7 @@ var PlayerView = Marionette.ItemView.extend({
       step: 1,
     })
     
-    this.panxslider = this.$('.pan_x').slider({
+    this.$('.pan_x').slider({
       orientation: 'horizontal',
       value: 0,
       min: -1,
@@ -109,13 +122,32 @@ var PlayerView = Marionette.ItemView.extend({
       step: 0.001
     })
 
-    this.rateslider = this.$('.rate').slider({
+     this.$('.rate').slider({
       orientation: 'horizontal',
       value: 1,
       min: 0.1,
       max: 5,
       step: 0.1
     })
+
+    this.$('.clean_gain').slider({
+      orientation: 'horizontal',
+      value: 0,
+      min: -60,
+      max: 0,
+      step: 1
+    })
+    this.$('.reverb_gain').slider({
+      orientation: 'horizontal',
+      value: -60,
+      min: -60,
+      max: 0,
+      step: 1
+    })
+
+
+
+
 
 
   }
