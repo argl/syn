@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index_routes = require('./routes/index');
 var speech_api_routes = require('./routes/speech_api');
+var sample_routes = require('./routes/samples');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use(function(req, res, next) {
 
 app.use('/', index_routes);
 app.use('/speech_api', speech_api_routes);
+app.use('/samples', sample_routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

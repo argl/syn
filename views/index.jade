@@ -22,9 +22,7 @@ block content
       hr
       form#file-frm()
         | Sample 
-        select(name='file')
-          for value in ['eleven.wav', 'huge_DC.wav', 'nine.wav', 'nineeleven.wav']
-            option(value="#{value}") #{value}
+        select#sounds(name='file')
         input(type="submit")
       hr
 

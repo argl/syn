@@ -314,6 +314,7 @@ $(function() {
     console.log("loaded", buffers)
   });
   loader.load();
+  fillSampleMenu()
 
 
   // get user inputs
@@ -336,6 +337,23 @@ $(function() {
         console.log('Some other kind of source: ', sourceInfo);
       }
     }
+  }
+
+  function fillSampleMenu() {
+    var sampleSelect = document.querySelector('select#sounds')
+    $.getJSON( "/samples", function( data ) {
+      _.each( data, function(samples, category) {
+        var optgroup = document.createElement('optgroup')
+        optgroup.label = category
+        sampleSelect.appendChild(optgroup);
+        _.each(samples, function(sample) {
+          var option = document.createElement('option')
+          option.value = category + "/" + sample
+          option.text = sample
+          optgroup.appendChild(option)
+        })
+      })
+    })
   }
 
   // navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;

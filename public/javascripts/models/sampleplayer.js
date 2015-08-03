@@ -13,7 +13,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
         this.set('speed', params.speed)
         this.set('voice', params.voice)
       } else {
-        url = "/sounds/test/" + encodeURIComponent(params.file)
+        url = "/sounds/bank/" + encodeURIComponent(params.file)
         this.set('file', params.file)
       }
       this.set('url', url)
