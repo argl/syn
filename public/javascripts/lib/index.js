@@ -9,12 +9,13 @@ import 'bootstrap-slider'
 
 import audio from './audio'
 import SamplePlayer from '../models/sampleplayer'
+import GrainPlayer from '../models/grainplayer'
 
 
 
 var PlayerView = Marionette.ItemView.extend({
   template: '#player-view-template',
-  className: 'col-xs-4 player',
+  className: 'col-xs-4 player.sampleplayer',
 
   events: {
     'click .destroy-btn': function(e) {
@@ -149,6 +150,12 @@ var PlayerView = Marionette.ItemView.extend({
   }
 })
 
+var GrainView = PlayerView.extend({
+  template: '#grain-view-template',
+  className: 'col-xs-4 player.grainplayer',
+})
+
+
 var PlayersView = Marionette.CompositeView.extend({
   template: '#players-view-template',
   childView: PlayerView,
@@ -174,27 +181,43 @@ var PlayersView = Marionette.CompositeView.extend({
 
 })
 
+var GrainsView = Marionette.CompositeView.extend({
+  template: '#grains-view-template',
+  childView: GrainView,
+  childViewContainer: ".grain-container",
+  events: {
+  }
+})
+
 
 $(function() {
 
   var players = new Backbone.Collection()
+  var grains = new Backbone.Collection()
 
   var playersview = new PlayersView({
     collection: players
   })
 
+  var grainsview = new GrainsView({
+    collection: grains
+  })
+
   var app = new Marionette.Application();
   app.addRegions({
     playersRegion: "#running",
+    grainsRegion: '#running-grains'
   });
   app.start()
   window.app = app
 
   app.playersRegion.show(playersview)
+  app.grainsRegion.show(grainsview)
 
   // speech form handling
-  $('#speech-frm').on('submit', function(e) {
+  $('#speech-frm button.player').on('click', function(e) {
     e.preventDefault()
+    e.stopPropagation()
     var params = {
       speech: true,
       text: $('[name=text]').val(),
@@ -204,14 +227,35 @@ $(function() {
     }
     loadAndPlaySound(params)
   })
+  $('#speech-frm button.grain').on('click', function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    var params = {
+      speech: true,
+      text: $('[name=text]').val(),
+      pitch: $('[name=pitch]').val(),
+      speed: $('[name=speed]').val(),
+      voice: $('[name=voice]').val()
+    }
+    loadAndPlayGrain(params)
+  })
 
   // file input handling
-  $('#file-frm').on('submit', function(e) {
+  $('#file-frm button.player').on('click', function(e) {
     e.preventDefault()
+    e.stopPropagation()
     var params = {
       file: $('[name=file]').val()
     }
     loadAndPlaySound(params)
+  })
+  $('#file-frm button.grain').on('click', function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    var params = {
+      file: $('[name=file]').val()
+    }
+    loadAndPlayGrain(params)
   })
 
 
@@ -223,8 +267,21 @@ $(function() {
     })
     addAndPreparePlayer(player)
   }
+  function loadAndPlayGrain(params) {
+    var player = new GrainPlayer({
+      params: params,
+      destination: context.destination,
+    })
+    addAndPrepareGrain(player)
+  }
 
   function addAndPreparePlayer(player) {
+    player.prepare(context)
+    .then(function(player) {
+      players.add(player)
+    })
+  }
+  function addAndPrepareGrain(player) {
     player.prepare(context)
     .then(function(player) {
       players.add(player)

@@ -103,6 +103,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       var model = this
       this.bufferList = bufferList
 
+
       this.distortion = context.createWaveShaper()
       this.distortion.oversample = '4x';
 

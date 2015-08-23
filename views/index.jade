@@ -18,12 +18,18 @@ block content
         select(name='voice')
           for value in ['don_diphone', 'us2_mbrola', 'rab_diphone', 'us1_mbrola', 'en1_mbrola', 'us3_mbrola', 'kal_diphone']
             option(value="#{value}") #{value}
-        input(type="submit")
+        button.player
+          | make player
+        button.grain
+          | make grain
       hr
       form#file-frm()
         | Sample 
         select#sounds(name='file')
-        input(type="submit")
+        button.player
+          | make player
+        button.grain
+          | make grain
       hr
 
       form#input-select-frm
@@ -33,6 +39,7 @@ block content
 
 
     #running
+    #running-grains
 
   script#player-view-template(type="text/html")
     .text
@@ -94,8 +101,6 @@ block content
     button.btn.stop-btn STOP
     button.btn.destroy-btn DESTROY
 
-
-
   script#players-view-template(type="text/html")
     | players
     .row
@@ -103,6 +108,70 @@ block content
       hr
 
     .row.player-container
+
+
+  script#grain-view-template(type="text/html")
+    .text
+      
+    .sliders
+      .control
+        input.gain(data-slider-id='gain', type="text")
+      .control
+        | Vol
+    .sliders
+      .control
+        input.distortion(data-slider-id='distortion', type="text")
+      .control
+        | Dist
+
+    .sliders
+      .control
+        input.rate(data-slider-id='rate', type="text")
+      .control
+        | Rate
+
+    .sliders
+      .control
+        select.reverb_type
+          option(value=0) auto_park
+          option(value=1) echo_plate
+          option(value=2) echo
+          option(value=3) muffler
+          option(value=4) spring
+          option(value=5) sudden_stop
+          option(value=6) telephone
+      .control
+        | Reverb type
+
+    .sliders
+      .control
+        input.clean_gain(data-slider-id='clean_gain', type="text")
+      .control
+        | Clean Vol
+    .sliders
+      .control
+        input.reverb_gain(data-slider-id='reverb_gain', type="text")
+      .control
+        | Reverb Vol
+
+
+    .meter
+      canvas#meter(width=72, height=30)
+
+
+    button.btn.play-btn PLAY
+    button.btn.stop-btn STOP
+    button.btn.destroy-btn DESTROY
+
+  script#grains-view-template(type="text/html")
+    | grains
+    //- .row
+    //-   button#start-trigger-btn Start Trigger
+    //-   hr
+
+    .row.grain-container
+
+
 
 block script
   script.

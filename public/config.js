@@ -12,6 +12,7 @@ System.config({
   "map": {
     "Semantic-Org/Semantic-UI": "github:Semantic-Org/Semantic-UI@1.12.3",
     "audio": "javascripts/lib/audio",
+    "sampleplayer": "javascripts/models/sampleplayer",
     "backbone": "npm:backbone@1.2.1",
     "backbone.babysitter": "github:marionettejs/backbone.babysitter@0.1.8",
     "backbone.marionette": "github:marionettejs/backbone.marionette@2.4.2",
