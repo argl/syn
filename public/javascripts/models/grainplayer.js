@@ -5,11 +5,13 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
 
     initialize: function() {
       console.log('grain player initlaizing')
-      this.set('panning', 0.1)
-      this.set('density', 0.85)
-      this.set('attack', 0.40)
-      this.set('release', 0.40)
-      this.set('spread', 0.2)
+      this.set('panning', 0.9)
+      this.set('density', 0.01)
+      this.set('attack', 0.2)
+      this.set('release', 0.2)
+      this.set('spread', 0.1)
+      this.set('disperse', 0.01)
+      this.playing = false
       SamplePlayer.prototype.initialize.apply(this, arguments);
     },
 
@@ -55,19 +57,10 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
 
       var grain ={}
 
-      //var attack = 0.40;
-      //var release = 0.40;
-      //var density = 0.85;
-      //var spread = 0.2;
-      //var reverb = 0.5;
-      //var pan = 0.1;
-      //var trans = 1;
-
-
       grain.now = this.context.currentTime; //update the time value
       //create the source
       grain.source = this.context.createBufferSource();
-      grain.source.playbackRate.value = grain.source.playbackRate.value * this.get('rate');
+      grain.source.playbackRate.value = grain.source.playbackRate.value * this.get('rate') + ((Math.random() * this.get('disperse')) - (this.get('disperse') / 2));
       grain.source.buffer = this.bufferList[0]
       //create the gain for enveloping
       grain.gain = this.context.createGain();
@@ -109,7 +102,8 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
 
       grain.randomoffset = (Math.random() * grain.spread) - (grain.spread / 2); //in seconds
       ///envelope
-      grain.source.start(grain.now,grain.offset + grain.randomoffset,grain.attack + grain.release); //parameters (when,offset,duration)
+
+      grain.source.start(grain.now, Math.max(0.001, grain.offset + grain.randomoffset), grain.attack + grain.release); //parameters (when,offset,duration)
       grain.gain.gain.setValueAtTime(0.0, grain.now);
       grain.gain.gain.linearRampToValueAtTime(grain.amp,grain.now + grain.attack);
       grain.gain.gain.linearRampToValueAtTime(0,grain.now + (grain.attack +  grain.release) );
@@ -138,11 +132,13 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       // this.bufferSource.onended = _.bind(function() {
       //   this.trigger('change:play', false)
       // }, this)
-      // this.rewire()
+      this.rewire()
+      this.playing = true
+      this.trigger('change:play', true)
+
       // this.bufferSource.start(0)
       // this.trigger('change:play', true)
-
-      var g = this.grain(0.5);
+      this.playGrain()
       //push to the array
       // that.grains[that.graincount] = g;
       // that.graincount+=1;
@@ -155,6 +151,20 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       //this.timeout = setTimeout(this.play, this.interval);
 
 
+    },
+
+
+    stop: function() {
+      this.playing = false
+      this.trigger('change:play', false)
+    },
+
+    playGrain: function() {
+      this.grain(0.5);
+      this.interval = (this.get('density') * 500) + 70;
+      if (this.playing) {
+        this.timeout = setTimeout(_.bind(this.playGrain, this), this.interval);
+      }
     },
 
     xmakeDistortionCurve: function(amount) {
