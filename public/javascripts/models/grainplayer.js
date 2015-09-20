@@ -6,21 +6,46 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
     initialize: function() {
       console.log('grain player initlaizing')
       this.set('panning', 0.9)
-      this.set('density', 0.01)
-      this.set('attack', 0.2)
-      this.set('release', 0.2)
-      this.set('spread', 0.1)
-      this.set('disperse', 0.01)
+      this.set('density', 50)
+      this.set('attack', 35)
+      this.set('release', 35)
+      this.set('spread', 100)
+      this.set('disperse', 10)
       this.playing = false
       SamplePlayer.prototype.initialize.apply(this, arguments);
     },
 
     finishedLoading: function(bufferList) {
-
+      var player = this
       SamplePlayer.prototype.finishedLoading.apply(this, arguments);
 
       this.mixnode = this.context.createGain()
       this.mixnode.gain.value = 1.0
+
+
+      // lfo for riding the sample up and down:
+      // create a low-freq oscialltor. connect it to a script node which 
+      // gets the current value for us and writes it to an instance variable
+      // ... which we can use to calculate a proper offset.
+      // wish us luck!
+      this.lfonode = this.context.createOscillator()
+      this.lfonode.type = 'triangle';
+      this.lfonode.frequency.value = 0.2;
+      this.lfonode.start();
+
+      this.lfopeek = this.context.createScriptProcessor(1024,1,1);
+      this.lfovalue = 0;
+
+      this.lfopeek.onaudioprocess = function(e){
+        var o = e.outputBuffer.getChannelData(0);
+        var i = e.inputBuffer.getChannelData(0);
+        player.lfovalue = i[0]*0.5 + 0.5; // range of 0..1
+      }
+
+      this.lfonode.connect(this.lfopeek)
+      this.lfopeek.connect(this.get('destination'))
+        
+
     },
 
     rewire: function() {
@@ -50,6 +75,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       this.cleanGain.connect(this.analyser)
       this.reverbGain.connect(this.analyser)
       this.analyser.connect(this.get('destination'))
+
     },
 
 
@@ -60,7 +86,8 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       grain.now = this.context.currentTime; //update the time value
       //create the source
       grain.source = this.context.createBufferSource();
-      grain.source.playbackRate.value = grain.source.playbackRate.value * this.get('rate') + ((Math.random() * this.get('disperse')) - (this.get('disperse') / 2));
+      var disperse = this.get('disperse') / 1000.0;
+      grain.source.playbackRate.value = grain.source.playbackRate.value * this.get('rate') + ((Math.random() * disperse) - (disperse / 2));
       grain.source.buffer = this.bufferList[0]
       //create the gain for enveloping
       grain.gain = this.context.createGain();
@@ -92,13 +119,13 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       //grain.amp = p.map(this.amp,0.0,1.0,1.0,0.0) * 0.7;
       
       //parameters
-      grain.attack = this.get('attack');
-      grain.release =  this.get('release');
+      grain.attack = this.get('attack') / 1000.0;
+      grain.release =  this.get('release') / 1000.0;
       
-      if(grain.release < 0){
-        grain.release = 0.1; // 0 - release causes mute for some reason
+      if(grain.release < 0.0001){
+        grain.release = 0.01; // 0 - release causes mute for some reason
       }
-      grain.spread = this.get('spread'); //spread;
+      grain.spread = this.get('spread') / 1000 //spre 
 
       grain.randomoffset = (Math.random() * grain.spread) - (grain.spread / 2); //in seconds
       ///envelope
@@ -121,36 +148,10 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
 
 
     play: function() {
-      // var context = this.context
-      // if (this.bufferSource) {
-      //   this.bufferSource.stop()
-      // }
-      // this.bufferSource = context.createBufferSource()
-      // this.bufferSource.buffer = this.bufferList[0]
-      // this.bufferSource.playbackRate.value = this.get('rate')
-      // this.bufferSource.loop = false
-      // this.bufferSource.onended = _.bind(function() {
-      //   this.trigger('change:play', false)
-      // }, this)
       this.rewire()
       this.playing = true
       this.trigger('change:play', true)
-
-      // this.bufferSource.start(0)
-      // this.trigger('change:play', true)
       this.playGrain()
-      //push to the array
-      // that.grains[that.graincount] = g;
-      // that.graincount+=1;
-          
-      // if(that.graincount > 20){
-      //   that.graincount = 0;
-      // }
-      //next interval
-      //this.interval = (this.get('density') * 500) + 70;
-      //this.timeout = setTimeout(this.play, this.interval);
-
-
     },
 
 
@@ -160,27 +161,13 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
     },
 
     playGrain: function() {
-      this.grain(0.5);
-      this.interval = (this.get('density') * 500) + 70;
+      this.grain(this.lfovalue);
+      // this.interval = (this.get('density') * 500) + 70;
+      this.interval = this.get('density');
       if (this.playing) {
         this.timeout = setTimeout(_.bind(this.playGrain, this), this.interval);
       }
     },
-
-    xmakeDistortionCurve: function(amount) {
-      var k = typeof amount === 'number' ? amount : 50
-      var n_samples = 44100
-      var curve = new Float32Array(n_samples)
-      var deg = Math.PI / 180
-      var i = 0
-      var x
-
-      for ( ; i < n_samples; ++i ) {
-        x = i * 2 / n_samples - 1;
-        curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
-      }
-      return curve;
-    }
 
 
   })

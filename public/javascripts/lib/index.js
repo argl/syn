@@ -15,7 +15,7 @@ import GrainPlayer from '../models/grainplayer'
 
 var PlayerView = Marionette.ItemView.extend({
   template: '#player-view-template',
-  className: 'col-xs-4 player.sampleplayer',
+  className: 'col-xs-4 player sampleplayer',
 
   events: {
     'click .destroy-btn': function(e) {
@@ -151,7 +151,70 @@ var PlayerView = Marionette.ItemView.extend({
 
 var GrainView = PlayerView.extend({
   template: '#grain-view-template',
-  className: 'col-xs-4 player.grainplayer',
+  className: 'col-xs-4 player grainplayer',
+  events: function() {
+    return _.extend({}, PlayerView.prototype.events, {
+      'change .grain-density': function(e) {
+        e.preventDefault()
+        this.model.set('density', e.value.newValue)
+      },
+      'change .grain-attack': function(e) {
+        e.preventDefault()
+        this.model.set('attack', e.value.newValue)
+      },
+      'change .grain-release': function(e) {
+        e.preventDefault()
+        this.model.set('release', e.value.newValue)
+      },
+      'change .grain-spread': function(e) {
+        e.preventDefault()
+        this.model.set('spread', e.value.newValue)
+      },
+      'change .grain-disperse': function(e) {
+        e.preventDefault()
+        this.model.set('disperse', e.value.newValue)
+      },
+    })
+  },
+
+  onShow: function() {
+    PlayerView.prototype.onShow.call(this);
+    this.$('.grain-density').slider({
+      orientation: 'horizontal',
+      value: this.model.get('density'),
+      min: 1,
+      max: 500,
+      step: 1
+    })
+    this.$('.grain-attack').slider({
+      orientation: 'horizontal',
+      value: this.model.get('attack'),
+      min: 1,
+      max: 500,
+      step: 1
+    })
+    this.$('.grain-release').slider({
+      orientation: 'horizontal',
+      value: this.model.get('release'),
+      min: 1,
+      max: 500,
+      step: 1
+    })
+    this.$('.grain-spread').slider({
+      orientation: 'horizontal',
+      value: this.model.get('spread'),
+      min: 1,
+      max: 500,
+      step: 1
+    })
+    this.$('.grain-disperse').slider({
+      orientation: 'horizontal',
+      value: this.model.get('disperse'),
+      min: 1,
+      max: 1000,
+      step: 1
+    })
+  },
 })
 
 
@@ -283,7 +346,7 @@ $(function() {
   function addAndPrepareGrain(player) {
     player.prepare(context)
     .then(function(player) {
-      players.add(player)
+      grains.add(player)
     })
   }
 
@@ -374,26 +437,26 @@ $(function() {
 
 
   // get user inputs
-  if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
-    alert('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
-  } else {
-    MediaStreamTrack.getSources(gotSources);
-  }
+  // if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
+  //   console.log('This browser does not support MediaStreamTrack.\n\nTry Chrome.');
+  // } else {
+  //   MediaStreamTrack.getSources(gotSources);
+  // }
 
-  function gotSources(sourceInfos) {
-    var audioSelect = document.querySelector('select#audio-sources');
-    for (var i = 0; i !== sourceInfos.length; ++i) {
-      var sourceInfo = sourceInfos[i];
-      var option = document.createElement('option');
-      option.value = sourceInfo.id;
-      if (sourceInfo.kind === 'audio') {
-        option.text = sourceInfo.label || 'microphone ' + (audioSelect.length + 1);
-        audioSelect.appendChild(option);
-      } else {
-        console.log('Some other kind of source: ', sourceInfo);
-      }
-    }
-  }
+  // function gotSources(sourceInfos) {
+  //   var audioSelect = document.querySelector('select#audio-sources');
+  //   for (var i = 0; i !== sourceInfos.length; ++i) {
+  //     var sourceInfo = sourceInfos[i];
+  //     var option = document.createElement('option');
+  //     option.value = sourceInfo.id;
+  //     if (sourceInfo.kind === 'audio') {
+  //       option.text = sourceInfo.label || 'microphone ' + (audioSelect.length + 1);
+  //       audioSelect.appendChild(option);
+  //     } else {
+  //       console.log('Some other kind of source: ', sourceInfo);
+  //     }
+  //   }
+  // }
 
   function fillSampleMenu() {
     var sampleSelect = document.querySelector('select#sounds')

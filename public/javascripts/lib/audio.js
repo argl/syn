@@ -77,7 +77,7 @@ BufferLoader.prototype.loadBuffer = function(url, index) {
           loader.onload(loader.bufferList);
       },
       function(error) {
-        console.error('decodeAudioData error', error);
+        console.error('decodeAudioData error', error, request);
       }
     );
   }

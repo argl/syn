@@ -5,7 +5,7 @@ block content
     .starter-template
       hr
       form#speech-frm(action='/speech_api', method="GET")
-        input(name='text', type='text')
+        input(name='text', style="width: 400px;",  type='text', placeholder="type text to speak or get a random collection of words")
         | Pitch
         select(name='pitch')
           for value in [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300]
@@ -32,10 +32,10 @@ block content
           | make grain
       hr
 
-      form#input-select-frm
-        | Input 
-        select#audio-sources
-      hr
+      //- form#input-select-frm
+      //-   | Input 
+      //-   select#audio-sources
+      //- hr
 
 
     #running
@@ -102,10 +102,10 @@ block content
     button.btn.destroy-btn DESTROY
 
   script#players-view-template(type="text/html")
-    | players
-    .row
-      button#start-trigger-btn Start Trigger
-      hr
+    h3 players
+    //- .row
+    //-   button#start-trigger-btn Start Trigger
+    //-   hr
 
     .row.player-container
 
@@ -154,6 +154,32 @@ block content
       .control
         | Reverb Vol
 
+    .graincontrols(style="background-color: #efe;")
+      .sliders
+        .control
+          input.grain-density(data-slider-id='grain-density', type="text")
+        .control
+          | Grain Density
+      .sliders
+        .control
+          input.grain-attack(data-slider-id='grain-attack', type="text")
+        .control
+          | Grain Attack
+      .sliders
+        .control
+          input.grain-release(data-slider-id='grain-release', type="text")
+        .control
+          | Grain Release
+      .sliders
+        .control
+          input.grain-spread(data-slider-id='grain-spread', type="text")
+        .control
+          | Grain Spread
+      .sliders
+        .control
+          input.grain-disperse(data-slider-id='grain-disperse', type="text")
+        .control
+          | Grain Disperse
 
     .meter
       canvas#meter(width=72, height=30)
@@ -164,7 +190,7 @@ block content
     button.btn.destroy-btn DESTROY
 
   script#grains-view-template(type="text/html")
-    | grains
+    h3 grains
     //- .row
     //-   button#start-trigger-btn Start Trigger
     //-   hr
