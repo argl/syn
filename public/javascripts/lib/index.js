@@ -87,13 +87,12 @@ var PlayerView = Marionette.ItemView.extend({
         last_l: -72,
         last_r: -72,
       }
-
       view.drawMeter.call(view)
+    })
 
-      view.listenTo(view.model, 'change:meter', function(l, r) {
-        view.meter_state.last_l = l
-        view.meter_state.last_r = r
-      })
+    this.listenTo(view.model, 'change:meter', function(l, r) {
+      view.meter_state.last_l = l
+      view.meter_state.last_r = r
     })
 
     this.listenTo(this.model, 'change:play', function(playing) {

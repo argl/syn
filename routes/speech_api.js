@@ -20,9 +20,10 @@ fs.readFile('lib/words', 'utf8', function (err, data) {
     return console.log(err);
   }
   words = _.filter(data.split(/\s+/), function(word) {
-    return word.match(/^syn/)
+    return word
+    // return word.match(/^syn/)
   });
-  console.log(words.splice(0, 10))
+  console.log("" + words.length + " words found.")
 })
 
 router.get('/', function(req, res, next) {
