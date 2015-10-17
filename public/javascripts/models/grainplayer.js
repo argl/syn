@@ -9,8 +9,8 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       this.set('density', 50)
       this.set('attack', 35)
       this.set('release', 35)
-      this.set('spread', 100)
-      this.set('disperse', 10)
+      this.set('spread', 0)
+      this.set('disperse', 0)
       this.playing = false
       SamplePlayer.prototype.initialize.apply(this, arguments);
     },
@@ -30,7 +30,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       // wish us luck!
       this.lfonode = this.context.createOscillator()
       this.lfonode.type = 'triangle';
-      this.lfonode.frequency.value = 0.2;
+      this.lfonode.frequency.value = 0.02;
       this.lfonode.start();
 
       this.lfopeek = this.context.createScriptProcessor(1024,1,1);
@@ -137,13 +137,13 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       
       //garbage collection
       grain.source.stop(grain.now + grain.attack + grain.release + 0.1); 
-      var tms = (grain.attack + grain.release) * 1000; //calculate the time in miliseconds
+      var tms = (grain.attack + grain.release +1) * 1000; //calculate the time in miliseconds
       setTimeout(function(){
         grain.gain.disconnect();
         if(yes === 1){
           grain.panner.disconnect();
         }
-      },tms + 200);
+      },tms + 10);
     },
 
 
@@ -165,7 +165,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q', 'samplepl
       // this.interval = (this.get('density') * 500) + 70;
       this.interval = this.get('density');
       if (this.playing) {
-        this.timeout = setTimeout(_.bind(this.playGrain, this), this.interval);
+        this.timeout = setTimeout(_.bind(this.playGrain, this), Math.random() * this.interval);
       }
     },
 

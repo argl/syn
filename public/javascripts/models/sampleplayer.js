@@ -1,21 +1,19 @@
 define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function(Backbone, Marionette, _, Audio, Q) {
 
-  var app = window.app = window.app || {}
-
   var SamplePlayer = Backbone.Model.extend({
 
     initialize: function() {
       var params  = this.get('params')
       var url
       if (params.speech) {
-        url = app.soundserver.url + "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
+        url = window.config.soundserver.url + "/speech_api?text="+encodeURIComponent(params.text)+"&pitch="+encodeURIComponent(params.pitch)+"&speed="+encodeURIComponent(params.speed)+"&voice="+encodeURIComponent(params.voice)+""
         this.set('speech', true)
         this.set('text', params.text)
         this.set('pitch', params.pitch)
         this.set('speed', params.speed)
         this.set('voice', params.voice)
       } else {
-        url = app.soundserver.url + "/sounds/bank/" + encodeURIComponent(params.file)
+        url = window.config.soundserver.url + "/sounds/bank/" + encodeURIComponent(params.file)
         this.set('file', params.file)
       }
       this.set('url', url)

@@ -203,7 +203,7 @@ block content
 
 block script
   script.
-    var app = window.app = window.app || {}
-    app.soundserver = !{JSON.stringify(config.soundserver)}
+    window.config = {}
+    window.config.soundserver = !{JSON.stringify(config.soundserver)}
     System.import('javascripts/lib/index')
 

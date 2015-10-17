@@ -45,7 +45,8 @@ var PlayerView = Marionette.ItemView.extend({
     },
     'change .rate': function(e) {
       e.preventDefault()
-      this.model.set('rate', e.value.newValue)
+      var rate = Math.round(1000000*Math.pow(2,(parseInt(e.value.newValue)/12)))/1000000
+      this.model.set('rate', rate)
     },
 
     'change .reverb_gain': function(e) {
@@ -125,10 +126,10 @@ var PlayerView = Marionette.ItemView.extend({
 
      this.$('.rate').slider({
       orientation: 'horizontal',
-      value: 1,
-      min: 0.1,
-      max: 5,
-      step: 0.1
+      value: 0,
+      min: -36,
+      max: 36,
+      step: 1
     })
 
     this.$('.clean_gain').slider({
