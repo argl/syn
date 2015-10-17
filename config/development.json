@@ -4,5 +4,8 @@
     "db": "syn",
     "username": "andi",
     "password": "blabla"
+  },
+  "soundserver": {
+    "url": "http://syn.a.null3.net"
   }
 }

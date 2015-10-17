@@ -1,0 +1,1 @@
+module.exports = require("npm:config@1.16.0/lib/config");

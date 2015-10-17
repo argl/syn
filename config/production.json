@@ -4,5 +4,8 @@
     "db": "syn",
     "username": "yyy",
     "password": "yyy"
+  },
+  "soundserver": {
+    "url": "http://xxx.xxx
   }
 }

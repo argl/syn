@@ -12,7 +12,10 @@ var docuri = require("docuri")
 var moment = require("moment")
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'SYN' });
+  res.render('index', { 
+    title: 'SYN', 
+    config: config 
+  });
 });
 
 module.exports = router;
