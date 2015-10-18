@@ -49,7 +49,7 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       })
 
       this.listenTo(this, 'change:reverb_type', function() {
-        this.convolver.buffer = app.impulseResponseBuffers[this.get('reverb_type')];
+        this.convolver.buffer = app.impulses.at(this.get('reverb_type')).get('buffer');
       })
     },
 
@@ -127,7 +127,8 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
       }
 
       this.convolver = context.createConvolver();
-      this.convolver.buffer = app.impulseResponseBuffers[this.get('reverb_type')];
+      this.convolver.buffer = app.impulses.at(this.get('reverb_type')).get('buffer');
+
 
       this.cleanGain = context.createGain();
       this.cleanGain.gain.value = Math.pow(10, (this.get('clean_gain')/10));

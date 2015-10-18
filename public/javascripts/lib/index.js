@@ -101,6 +101,17 @@ var PlayerView = Marionette.ItemView.extend({
       this.$('.stop-btn').prop('disabled', !!!playing)
     })
 
+    var $impulse_select = this.$('select#impulses')
+    $impulse_select.empty()
+    app.impulses.each(function(impulse, idx) {
+      var $option = $('<option>')
+      $option.val(idx)
+      $option.text(impulse.get('name'))
+      $impulse_select.append($option)
+    })
+
+
+
     this.$('.gain').slider({
       orientation: 'horizontal',
       value: -3,
@@ -420,22 +431,36 @@ $(function() {
   window.audioContext = context
   app.context = context
 
-  //load impulse responses
-  var loader = new audio.BufferLoader(context, [
-    "sounds/impulse-response/auto_park.wav",
-    "sounds/impulse-response/echo_plate.wav",
-    "sounds/impulse-response/echo.wav",
-    "sounds/impulse-response/muffler.wav",
-    "sounds/impulse-response/spring.wav",
-    "sounds/impulse-response/sudden_stop.wav",
-    "sounds/impulse-response/telephone.wav",
-  ], function(buffers) {
-    app.impulseResponseBuffers = buffers
-    console.log("loaded", buffers)
-  });
-  loader.load();
-  fillSampleMenu()
 
+  var Impulses = Backbone.Collection.extend({
+    url: "/impulses"
+  })
+  var impulses = new Impulses()
+  impulses.once('update', function(c) {
+    console.log(c)
+    //load impulse responses
+    var loader = new audio.BufferLoader(context, c.map(function(i) {return i.get('path')}), function(buffers) {
+      // app.impulseResponseBuffers = buffers
+      for (var i = 0; i !== c.length; ++i) {
+        impulses.at(i).set('buffer', buffers[i])
+      }
+      app.impulses = impulses
+      console.log("" + c.length + " impulse responses loaded", app.impulses)
+
+      // var impulse_select = document.querySelector('select#impulses')
+      // for (var i = 0; i !== c.length; ++i) {
+      //   var option = document.createElement('option')
+      //   option.value = i
+      //   option.text = c.at(i).get('name')
+      //   impulse_select.append(otpion)
+      // }
+    });
+    loader.load();
+  })
+  impulses.fetch()
+
+
+  fillSampleMenu()
 
   // get user inputs
   // if (typeof MediaStreamTrack === 'undefined' || typeof MediaStreamTrack.getSources === 'undefined') {
