@@ -112,7 +112,7 @@ var PlayerView = Marionette.ItemView.extend({
       orientation: 'horizontal',
       value: 0,
       min: 0,
-      max: 2000,
+      max: 12,
       step: 1,
     })
     

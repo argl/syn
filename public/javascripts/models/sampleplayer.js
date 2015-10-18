@@ -159,17 +159,40 @@ define(['backbone', 'backbone.marionette', 'underscore', 'audio', 'q'], function
     },
 
     makeDistortionCurve: function(amount) {
-      var k = typeof amount === 'number' ? amount : 50
+      var k = typeof amount === 'number' ? amount : 0
       var n_samples = 44100
       var curve = new Float32Array(n_samples)
       var deg = Math.PI / 180
       var i = 0
       var x
 
-      for ( ; i < n_samples; ++i ) {
-        x = i * 2 / n_samples - 1;
-        curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+      if (k === 0) {
+        for ( ; i < n_samples; ++i ) {
+          curve[i] = i
+        }
+      } else {
+        var fCyclePosition = 0
+        var fCycleInc = k/n_samples
+        for ( ; i < n_samples; ++i ) {
+          curve[i] = (Math.sin(-Math.PI + (2*Math.PI * fCyclePosition)) + 0) * 0.5
+          if(i % 1000 == 0) {
+            console.log(curve[i])
+          }
+          fCyclePosition += fCycleInc
+          if (fCyclePosition > 1) {
+            fCyclePosition -= 1;
+          }
+        }
       }
+
+      // for ( ; i < n_samples; ++i ) {
+      //   x = i * 2 / n_samples - 1;
+      //   curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+      //   if(i % 1000 == 0) {
+      //     console.log(curve[i])
+      //   }
+      // }
+
       return curve;
     }
 
